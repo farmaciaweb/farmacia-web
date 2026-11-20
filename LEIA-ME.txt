@@ -1,0 +1,34 @@
+FARMÁCIA DEEP — INTEGRAÇÃO SUPABASE + CHECKOUT MERCADO PAGO
+
+ARQUIVOS
+- index.html: loja, carrinho, checkout, login administrativo, cadastro e exclusão de produtos, consulta de pedidos.
+- supabase-schema.sql: tabelas e regras de acesso do banco.
+- netlify/functions/create-payment.js: cria o Checkout Pro do Mercado Pago no servidor.
+- netlify/functions/mp-webhook.js: consulta o pagamento e atualiza o status do pedido.
+
+PASSO 1 — SUPABASE
+1. Abra o projeto Supabase.
+2. Entre em SQL Editor > New query.
+3. Cole o arquivo supabase-schema.sql e clique em Run.
+4. Em Authentication > Users, crie o usuário administrador.
+5. No SQL, retire os comentários da última linha de UPDATE, substitua SEU_EMAIL_AQUI pelo e-mail do admin e execute.
+
+PASSO 2 — NETLIFY
+Publique a pasta do projeto no Netlify. Em Site configuration > Environment variables, cadastre:
+SUPABASE_URL = https://vqbfhrvqoukgldcrqblw.supabase.co
+SUPABASE_SERVICE_ROLE_KEY = chave secreta/service_role do Supabase (somente variável do servidor; nunca no index.html)
+MP_ACCESS_TOKEN = Access Token privado do Mercado Pago (quando estiver pronto)
+SITE_URL = URL pública completa do site, por exemplo https://seusite.netlify.app
+
+Depois de cadastrar variáveis, faça um novo deploy.
+
+PASSO 3 — MERCADO PAGO
+Configure a URL de notificações/webhook para:
+https://SEU-SITE.netlify.app/.netlify/functions/mp-webhook
+O pagamento usa Checkout Pro. A chave privada fica somente nas variáveis do Netlify.
+
+IMPORTANTE
+- Até configurar MP_ACCESS_TOKEN e as variáveis do servidor, o formulário registra o pedido no Supabase, mas não abre pagamento.
+- Produtos nas categorias tarja e hormonios são bloqueados para pagamento automático até análise e validação de dispensação. Não remova esse bloqueio sem confirmar as exigências legais/sanitárias aplicáveis.
+- O site usa a chave pública do Supabase fornecida na conversa. Nunca coloque service_role ou token privado no HTML.
+- Antes de usar em produção, teste com credenciais de teste e confira políticas RLS, estoque, frete, impostos e regras aplicáveis à atividade farmacêutica.
